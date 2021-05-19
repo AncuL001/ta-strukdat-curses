@@ -1,0 +1,2 @@
+build: main.cpp menus/task-menu.cpp menus/category-menu.cpp menus/additional-menu.cpp functions/datetime-plus.cpp functions/import-export.cpp
+	g++ -o main main.cpp menus/task-menu.cpp menus/category-menu.cpp menus/additional-menu.cpp functions/datetime-plus.cpp functions/import-export.cpp -I../libs/include/csv2 -Wall -Wpedantic -Wextra -std=c++17
