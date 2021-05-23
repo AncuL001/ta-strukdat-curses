@@ -1,13 +1,7 @@
 #pragma once
-#include <iomanip>
 #include "../data-structures/linked-list.hpp"
 #include "../data-structures/queue.hpp"
-
-#ifdef _WIN32
-#define CLEAR "cls"
-#else //In any other OS
-#define CLEAR "clear"
-#endif
+#include <curses.h>
 
 void first_task_screen(data_structures::CategoryNodePointer &current);
 

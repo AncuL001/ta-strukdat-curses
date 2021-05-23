@@ -1,186 +1,291 @@
 #include "category-menu.hpp"
 
 void print_categories(const data_structures::CategoryList list){
-  std::cout << "Daftar Kategori:\n";
+  printw("Daftar Kategori:\n");
   list.for_each([](data_structures::CategoryNodePointer category){
-    std::cout << " " << category->name << "\n";
+    printw(" "); printw(category->name.c_str()); printw("\n");
   });
 }
 
 void move_category_screen(data_structures::CategoryList &list){
-  system(CLEAR);
+  MEVENT event;
+  mmask_t old;
+  mousemask (ALL_MOUSE_EVENTS | REPORT_MOUSE_POSITION, &old);
+  noraw();
+	echo();
+
+  clear();
   print_categories(list);
-  std::cout << "\n"
-            << "Nama kategori: (0. Batal)\n"
-            << ">> ";
+  printw("\n"); printw("Nama kategori: (0. Batal)\n");
+  printw(">> ");
+  refresh();
 
-  std::string name;
-  std::getline(std::cin, name);
-  std::getline(std::cin, name);
-  if (name == "0") return;
+  char name[1000];
+  getstr(name);
+  if (*name == '0') return;
 
-  if (list.move_current(name) == 0){
-    system(CLEAR);
-    std::cout << "Perpindahan kategori gagal!\n"
-              << "Kategori tidak ditemukan.\n"
-              << "0. Kembali\n"
-              << ">> ";
-    std::string dummy;
-    std::getline(std::cin, dummy);
+  if (!list.move_current(name)){
+    raw();
+    noecho();
+
+    clear();
+    printw("Perpindahan kategori gagal!\n");
+    printw("Kategori tidak ditemukan.\n");
+    printw("> Kembali\n");
+    refresh();
+
+    int ch = getch();
+    if (ch == KEY_MOUSE) {
+      if (nc_getmouse(&event) == OK){
+        if (event.bstate & BUTTON1_CLICKED){
+          if (event.y == 2) return;
+        }
+      }
+    }
   }
 }
 
 void rename_category_screen(data_structures::CategoryList &list){
-  system(CLEAR);
+  MEVENT event;
+  mmask_t old;
+  mousemask (ALL_MOUSE_EVENTS | REPORT_MOUSE_POSITION, &old);
+  noraw();
+	echo();
+
+  clear();
   print_categories(list);
-  std::cout << "\n"
-            << "Nama kategori: (0. Batal)\n"
-            << ">> ";
+  printw("\n"); printw("Nama kategori: (0. Batal)\n");
+  printw(">> ");
+  refresh();
 
-  std::string oldName, newName;
-  std::getline(std::cin, oldName);
-  std::getline(std::cin, oldName);
-  if (oldName == "0") return;
+  char oldName[1000];
+  getstr(oldName);
+  if (*oldName == '0') return;
 
-  std::cout << "Nama baru : (0. Batal)\n"
-            << ">> ";
+  printw("\n"); printw("Nama baru : (0. Batal)\n");
+  printw(">> ");
+  refresh();
 
-  std::getline(std::cin, newName);
-  if (newName == "0") return;
+  char newName[1000];
+  getstr(newName);
+  if (*newName == '0') return;
 
   if (list.find_category(newName) && (oldName != newName)){
-    system(CLEAR);
-    std::cout << "Pengubahan nama kategori gagal!\n"
-              << "Nama kategori baru tidak boleh sama dengan kategori lain\n"
-              << "0. Kembali\n"
-              << ">> ";
-    std::string dummy;
-    std::getline(std::cin, dummy);
-    return;
+    raw();
+    noecho();
+
+    clear();
+    printw("Perpindahan kategori gagal!\n");
+    printw("Nama kategori baru tidak boleh sama dengan kategori lain\n");
+    printw("> Kembali\n");
+    refresh();
+
+    int ch = getch();
+    if (ch == KEY_MOUSE) {
+      if (nc_getmouse(&event) == OK){
+        if (event.bstate & BUTTON1_CLICKED){
+          if (event.y == 2) return;
+        }
+      }
+    }
   }
 
-  if (list.rename_category(oldName, newName) == 0){
-    system(CLEAR);
-    std::cout << "Pengubahan nama kategori gagal!\n"
-              << "Kategori tidak ditemukan\n"
-              << "0. Kembali\n"
-              << ">> ";
-    std::string dummy;
-    std::getline(std::cin, dummy);
+  if (!list.rename_category(oldName, newName)){
+    raw();
+    noecho();
+
+    clear();
+    printw("Perpindahan kategori gagal!\n");
+    printw("Kategori tidak ditemukan.\n");
+    printw("> Kembali\n");
+    refresh();
+
+    int ch = getch();
+    if (ch == KEY_MOUSE) {
+      if (nc_getmouse(&event) == OK){
+        if (event.bstate & BUTTON1_CLICKED){
+          if (event.y == 2) return;
+        }
+      }
+    }
   }
 }
 
 void add_category_screen(data_structures::CategoryList &list){
-  system(CLEAR);
-  std::cout << "Nama kategori: (0. Batal)\n"
-            << ">> ";
+  MEVENT event;
+  mmask_t old;
+  mousemask (ALL_MOUSE_EVENTS | REPORT_MOUSE_POSITION, &old);
+  noraw();
+	echo();
 
-  std::string name;
-  std::getline(std::cin, name);
-  std::getline(std::cin, name);
-  if (name == "0") return;
+  clear();
+  print_categories(list);
+  printw("\n"); printw("Nama kategori: (0. Batal)\n");
+  printw(">> ");
+  refresh();
 
-  if (list.insert_category(new data_structures::CategoryNode(name)) == 0){
-    system(CLEAR);
-    std::cout << "Penambahan kategori gagal!\n"
-              << "Nama kategori baru tidak boleh sama dengan kategori lain\n"
-              << "0. Kembali\n"
-              << ">> ";
-    std::string dummy;
-    std::getline(std::cin, dummy);
-  };
+  char name[1000];
+  getstr(name);
+  if (*name == '0') return;
+
+  if (!list.insert_category(new data_structures::CategoryNode(name))){
+    raw();
+    noecho();
+
+    clear();
+    printw("Perpindahan kategori gagal!\n");
+    printw("Nama kategori baru tidak boleh sama dengan kategori lain\n");
+    printw("> Kembali\n");
+    refresh();
+
+    int ch = getch();
+    if (ch == KEY_MOUSE) {
+      if (nc_getmouse(&event) == OK){
+        if (event.bstate & BUTTON1_CLICKED){
+          if (event.y == 2) return;
+        }
+      }
+    }
+  }
+  list.move_current(name);
 }
 
 void remove_category_screen(data_structures::CategoryList &list){
-  system(CLEAR);
-  print_categories(list);
-  std::cout << "\n"
-            << "Nama kategori yang ingin dihapus: (0. Batal)\n"
-            << ">> ";
+  MEVENT event;
+  mmask_t old;
+  mousemask (ALL_MOUSE_EVENTS | REPORT_MOUSE_POSITION, &old);
+  noraw();
+	echo();
 
-  std::string name;
-  std::getline(std::cin, name);
-  std::getline(std::cin, name);
-  if (name == "0") return;
+  clear();
+  print_categories(list);
+  printw("\n"); printw("Nama kategori yang ingin dihapus: (0. Batal)\n");
+  printw(">> ");
+  refresh();
+
+  char name[1000];
+  getstr(name);
+  if (*name == '0') return;
 
   if (list.find_category(name) && !list.find_category(name)->tasks.is_empty()){
-    system(CLEAR);
-    std::cout << "Kategori masih memiliki task\n"
-              << "Jika melanjutkan, semua task akan dihapus.\n"
-              << "1. Melanjutkan\n"
-              << "0. Kembali\n"
-              << ">> ";
-    char sel;
-    std::cin >> sel;
-    if (sel == '0') return;
+    raw();
+    noecho();
+
+    clear();
+    printw("Kategori masih memiliki task\n");
+    printw("Jika melanjutkan, semua task akan dihapus.\n");
+    printw("> Melanjutkan\n");
+    printw("> Kembali\n");
+    refresh();
+
+    int ch = getch();
+    if (ch == KEY_MOUSE) {
+      if (nc_getmouse(&event) == OK){
+        if (event.bstate & BUTTON1_CLICKED){
+          if (event.y == 2){
+            list.remove_category(name);
+            return;
+          }
+          if (event.y == 3) return;
+        }
+      }
+    }
   }
 
-  if (list.remove_category(name) == 0){
-    system(CLEAR);
-    std::cout << "Penghapusan kategori gagal!\n"
-              << "Kategori tidak ditemukan\n"
-              << "0. Kembali\n"
-              << ">> ";
-    std::string dummy;
-    std::getline(std::cin, dummy);
+  if (!list.remove_category(name)){
+    raw();
+    noecho();
+
+    clear();
+    printw("Perpindahan kategori gagal!\n");
+    printw("Kategori tidak ditemukan.\n");
+    printw("> Kembali\n");
+    refresh();
+
+    int ch = getch();
+    if (ch == KEY_MOUSE) {
+      if (nc_getmouse(&event) == OK){
+        if (event.bstate & BUTTON1_CLICKED){
+          if (event.y == 2) return;
+        }
+      }
+    }
   }
 }
 
 void view_category_screen(const data_structures::CategoryList list){
-  system(CLEAR);
+  MEVENT event;
+  mmask_t old;
+  mousemask (ALL_MOUSE_EVENTS | REPORT_MOUSE_POSITION, &old);
+  raw();
+  noecho();
+
+  clear();
   print_categories(list);
-  std::cout << "0. Kembali\n"
-            << ">> ";
+  printw("> Kembali\n");
+  refresh();
 
-  char sel;
-  std::cin >> sel;
-  switch (sel){
-    case '0':
-      return;
-
-     default:
-      break;
+  int ch = getch();
+  if (ch == KEY_MOUSE) {
+    if (nc_getmouse(&event) == OK){
+      if (event.bstate & BUTTON1_CLICKED) return;
+    }
   }
 }
 
 void category_options_screen(data_structures::CategoryList &list){
+  MEVENT event;
+  mmask_t old;
+  mousemask (ALL_MOUSE_EVENTS | REPORT_MOUSE_POSITION, &old);
+  raw();
+  noecho();
+
   data_structures::CategoryNodePointer current = list.get_current();
-  system(CLEAR);
-  std::cout << "Kategori : " << current->name << "\n\n"
-            << "1. Pindah Kategori\n"
-            << "2. Ubah Nama Kategori\n"
-            << "3. Tambahkan Kategori\n"
-            << "4. Hapus Kategori\n"
-            << "5. Lihat Semua Kategori\n\n\n"
-            << "0. Kembali\n"
-            << ">> ";
-  char sel;
-    std::cin >> sel;
-    switch (sel){
-      case '1':
-        move_category_screen(list);
-        break;
+  while (true){
+    clear();
+    printw("Kategori : "); printw(current->name.c_str()); printw("\n\n");
+    printw("> Pindah Kategori\n");
+    printw("> Ubah Nama Kategori\n");
+    printw("> Tambahkan Kategori\n");
+    printw("> Hapus Kategori\n");
+    printw("> Lihat Semua Kategori\n\n\n");
+    printw("> Kembali\n");
 
-      case '2':
-        rename_category_screen(list);
-        break;
+    refresh();
+    
+    int ch = getch();
+    if (ch == KEY_MOUSE) {
+      if (nc_getmouse(&event) == OK){
+        if (event.bstate & BUTTON1_CLICKED){
+          switch (event.y){
+            case 2:
+              move_category_screen(list);
+              return;
 
-      case '3':
-        add_category_screen(list);
-        break;
+            case 3:
+              rename_category_screen(list);
+              return;
 
-      case '4':
-        remove_category_screen(list);
-        break;
+            case 4:
+              add_category_screen(list);
+              return;
 
-      case '5':
-        view_category_screen(list); 
-        break;
+            case 5:
+              remove_category_screen(list);
+              return;
 
-      case '0':
-        return;
+            case 6:
+              view_category_screen(list); 
+              break;
 
-      default:
-        break;
+            case 9:
+              return;
+
+            default:
+              break;
+          }
+        }
+      }
     }
+  }
 }

@@ -1,12 +1,7 @@
 #pragma once
 #include "../data-structures/linked-list.hpp"
 #include "../data-structures/queue.hpp"
-
-#ifdef _WIN32
-#define CLEAR "cls"
-#else //In any other OS
-#define CLEAR "clear"
-#endif
+#include <curses.h>
 
 void print_categories(const data_structures::CategoryList list);
 

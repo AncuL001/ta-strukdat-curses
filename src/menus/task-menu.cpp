@@ -1,93 +1,139 @@
 #include "task-menu.hpp"
 
 void first_task_screen(data_structures::CategoryNodePointer &current){
+  MEVENT event;
+  mmask_t old;
+  mousemask (ALL_MOUSE_EVENTS | REPORT_MOUSE_POSITION, &old);
+  noraw();
+	echo();
+
   auto top = current->tasks.top();
 
-  system(CLEAR);
-  std::cout << "Kategori: " << current->name << "\n\n\n";
-  if (current->tasks.is_empty()){
-    std::cout << "Tidak ada task!\n"
-              << "0. Kembali\n"
-              << ">> ";
-    std::string dummy;
-    std::getline(std::cin, dummy);
-    std::getline(std::cin, dummy);
-    return;
-  }
+  while(true){
+    clear();
+    printw("Kategori: "); printw(current->name.c_str()); printw("\n\n\n");
 
-  std::cout << top->description
-            << "\nDeadline : "
-            << std::setfill('0') << std::setw(2) << top->deadline.tm_mday << "-" 
-            << std::setfill('0') << std::setw(2) << top->deadline.tm_mon << "-" 
-            << std::setfill('0') << std::setw(4) << top->deadline.tm_year << "\n\n\n\n" 
-            << "1. Tandai selesai\n"
-            << "0. Kembali\n"
-            << ">> ";
-  char sel;
-  std::cin >> sel;
-  switch (sel){
-    case '1':
-      current->tasks.dequeue();
-      break;
+    if (current->tasks.is_empty()){
+      printw("Tidak ada task!\n");
+      printw("> Kembali\n");
+      refresh();
 
-    case '0':
-      return;
+      int ch = getch();
+      if (ch == KEY_MOUSE) {
+        if (nc_getmouse(&event) == OK){
+          if (event.bstate & BUTTON1_CLICKED){
+            if (event.y == 4) return;
+          }
+        }
+      }
+    }
 
-     default:
-      break;
+    printw(top->description.c_str());
+    printw("\nDeadline : ");
+    printw("%02d-", top->deadline.tm_mday);
+    printw("%02d-", top->deadline.tm_mon);
+    printw("%04d\n\n\n", top->deadline.tm_year);
+
+    printw("> Tandai selesai\n");
+    printw("> Kembali\n");
+    refresh();
+
+    int ch = getch();
+      
+    if (ch == KEY_MOUSE){
+      if (nc_getmouse(&event) == OK){
+        if (event.bstate & BUTTON1_CLICKED){
+          switch (event.y) {
+            case 7:
+              current->tasks.dequeue();
+              return;
+            
+            case 8:
+              return;
+
+
+            default:
+              break;
+          }
+        }
+      }
+    }
   }
 }
 
 void all_task_screen(const data_structures::CategoryNodePointer current){
+  MEVENT event;
+  mmask_t old;
+  mousemask (ALL_MOUSE_EVENTS | REPORT_MOUSE_POSITION, &old);
+  noraw();
+	echo();
+
   auto tasks = current->tasks;
 
-  system(CLEAR);
-  std::cout << "Kategori: " << current->name << "\n\n\n";
-  if (tasks.is_empty()){
-    std::cout << "Tidak ada task!\n"
-              << "0. Kembali\n"
-              << ">> ";
-    std::string dummy;
-    std::getline(std::cin, dummy);
-    std::getline(std::cin, dummy);
-    return;
-  }
+  while(true){
+    clear();
+    printw("Kategori: "); printw(current->name.c_str()); printw("\n\n\n");
 
-  std::cout << "Deadline   | Task\n";
-  tasks.for_each([](data_structures::TaskNodePointer task){
-    std::cout << std::setfill('0') << std::setw(2) << task->deadline.tm_mday << "-" 
-              << std::setfill('0') << std::setw(2) << task->deadline.tm_mon << "-" 
-              << std::setfill('0') << std::setw(4) << task->deadline.tm_year << " | " 
-              << task->description << "\n";
-  });
-  std::cout << "\n\n\n0. Kembali\n>> ";
-  char sel;
-  std::cin >> sel;
-  switch (sel){
-    case '0':
-      return;
+    if (current->tasks.is_empty()){
+      printw("Tidak ada task!\n");
+      printw("> Kembali\n");
+      refresh();
 
-     default:
-      break;
+      int ch = getch();
+      if (ch == KEY_MOUSE) {
+        if (nc_getmouse(&event) == OK){
+          if (event.bstate & BUTTON1_CLICKED){
+            if (event.y == 4) return;
+          }
+        }
+      }
+    }
+
+    printw("Deadline   | Task\n");
+    tasks.for_each([](data_structures::TaskNodePointer task){
+      printw("%02d-", task->deadline.tm_mday);
+      printw("%02d-", task->deadline.tm_mon);
+      printw("%04d | ", task->deadline.tm_year);
+      printw(task->description.c_str()); printw("\n");
+    });
+
+    printw("\n> Kembali\n");
+    refresh();
+
+    int ch = getch();
+      
+    if (ch == KEY_MOUSE){
+      if (nc_getmouse(&event) == OK){
+        if (event.bstate & BUTTON1_CLICKED) return;
+      }
+    }
   }
 }
 
+
 void add_task_screen(data_structures::CategoryNodePointer &current){
   // TODO : Benahi input tanggal yang tidak benar
-  system(CLEAR);
-  std::cout << "Kategori: " << current->name << "\n\n\n"
-            << "Nama task : (0. Batal)\n"
-            << ">> ";
-  
-  std::string name, deadline;
-  std::getline(std::cin, name);
-  std::getline(std::cin, name);
-  if (name == "0") return;
+  noraw();
+	echo();
 
-  std::cout << "\n"
-            << "Deadline (DD-MM-YYYY) : (0. Batal)\n"
-            << ">> ";
-  std::cin >> deadline;
-  if (deadline == "0") return;
+  clear();
+  printw("Kategori: "); printw(current->name.c_str()); printw("\n\n\n");
+  printw("Nama task (0. Batal)\n");
+  printw(">> ");
+  refresh();
+  
+  char name[1000];
+  getstr(name);
+  if (*name == '0') return;
+
+  printw("\n");
+  printw("Deadline (DD-MM-YYYY) (0. Batal)\n");
+  printw(">> ");
+  refresh();
+
+  char deadline[1000];
+  getstr(deadline);
+  if (*deadline == '0') return;
+
   current->tasks.enqueue(new data_structures::TaskNode(name, parse_date(deadline)));
 }
