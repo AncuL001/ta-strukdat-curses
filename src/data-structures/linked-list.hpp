@@ -34,6 +34,7 @@ namespace data_structures {
    */
   class CategoryList {
     private :
+    size_t size;
     CategoryNodePointer head;
     CategoryNodePointer tail;
 
@@ -47,6 +48,7 @@ namespace data_structures {
      * @brief Constructor
      */
     CategoryList(){
+      size = 0;
       head = nullptr;
       tail = nullptr;
     }
@@ -57,13 +59,14 @@ namespace data_structures {
      * @return 1 jika kosong, 0 jika tidak
      */
     bool is_empty(){
-      return head == nullptr;
+      return size == 0;
     }
 
     void make_empty(){
       while (!is_empty()){
         remove_category(head->name);
       }
+      size = 0;
     }
     /**
      * @brief memasukan node ke paling belakang list.
@@ -76,12 +79,14 @@ namespace data_structures {
         head = newNode;
         tail = newNode;
         current = newNode;
+        size++;
         return 1;
       }
       if (find_category(newNode->name)) return 0;
       tail->next = newNode;
       newNode->prev = tail;
       tail = newNode;
+      size++;
       return 1;
     }
 
@@ -135,6 +140,7 @@ namespace data_structures {
       }
 
       delete temp;
+      size--;
       return 1;
     }
 
