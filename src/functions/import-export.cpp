@@ -9,8 +9,13 @@ bool import_data(data_structures::CategoryList &list, std::string name){
 
   list.make_empty();
 
+  std::ifstream test;
+  test.open(name);
+  if (!test) return 0;
+  test.close();
+
   csv2::Reader<> file;
-  if (!file.mmap(name)) return 0;
+  file.mmap(name);
 
   for (const auto row: file){
     std::string category, task, deadline;
