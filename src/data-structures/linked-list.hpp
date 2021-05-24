@@ -58,8 +58,12 @@ namespace data_structures {
      *
      * @return 1 jika kosong, 0 jika tidak
      */
-    bool is_empty(){
+    bool is_empty() const{
       return size == 0;
+    }
+
+    size_t get_size() const{
+      return size;
     }
 
     void make_empty(){
@@ -99,6 +103,16 @@ namespace data_structures {
     CategoryNodePointer find_category(const std::string name) const {
       CategoryNodePointer temp = head;
       while ((temp) && (temp->name != name)){
+        temp = temp->next;
+      }
+      return temp;
+    }
+
+    CategoryNodePointer at(const size_t size) const {
+      if (size > this->size) return nullptr;
+
+      CategoryNodePointer temp = head;
+      for (size_t i = 0; i != size; i++){
         temp = temp->next;
       }
       return temp;
@@ -144,6 +158,38 @@ namespace data_structures {
       return 1;
     }
 
+    bool remove_category(size_t index) {
+      CategoryNodePointer temp = at(index);
+      if (temp == nullptr) return 0;
+      temp->tasks.make_empty();
+
+      if (temp == head){
+        if (temp == tail){
+          head = nullptr;
+          tail = nullptr;
+        }
+        else {
+          temp->next->prev = nullptr;
+          head = temp->next;
+        }
+      }
+
+      else {
+        if (temp == tail){
+          temp->prev->next = nullptr;
+          tail = temp->prev;
+        }
+        else {
+          temp->next->prev = temp->prev;
+          temp->prev->next = temp->next;
+        }
+      }
+
+      delete temp;
+      size--;
+      return 1;
+    }
+
     /**
      * @brief mengubah nama node.
      * 
@@ -153,6 +199,14 @@ namespace data_structures {
      */
     bool rename_category(const std::string oldName, const std::string newName){
       CategoryNodePointer temp = find_category(oldName);
+      if (temp == nullptr) return 0;
+
+      temp->name = newName;
+      return 1;
+    }
+
+    bool rename_category(const size_t index, const std::string newName){
+      CategoryNodePointer temp = at(index);
       if (temp == nullptr) return 0;
 
       temp->name = newName;
@@ -175,6 +229,14 @@ namespace data_structures {
      */
     bool move_current(const std::string name){
       CategoryNodePointer temp = find_category(name);
+      if (temp == nullptr) return 0;
+
+      current = temp;
+      return 1;
+    }
+
+    bool move_current(const size_t index){
+      CategoryNodePointer temp = at(index);
       if (temp == nullptr) return 0;
 
       current = temp;
