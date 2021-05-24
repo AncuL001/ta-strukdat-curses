@@ -34,6 +34,8 @@ bool import_data(data_structures::CategoryList &list, std::string name){
       list.get_current()->tasks.enqueue(new data_structures::TaskNode(task, parse_date(deadline)));
     }
   }
+  list.remove_category_idx(list.get_size() - 1);
+  list.move_current_idx(0);
   return 1;
 }
 
