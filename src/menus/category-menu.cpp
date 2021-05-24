@@ -3,7 +3,7 @@
 void print_categories(const data_structures::CategoryList list){
   printw("Daftar Kategori:\n");
   list.for_each([](data_structures::CategoryNodePointer category){
-    printw(" "); printw(category->name.c_str()); printw("\n");
+    printw("> "); printw(category->name.c_str()); printw("\n");
   });
 }
 
@@ -11,34 +11,24 @@ void move_category_screen(data_structures::CategoryList &list){
   MEVENT event;
   mmask_t old;
   mousemask (ALL_MOUSE_EVENTS | REPORT_MOUSE_POSITION, &old);
-  noraw();
-	echo();
+  raw();
+	noecho();
 
-  clear();
-  print_categories(list);
-  printw("\n"); printw("Nama kategori: (0. Batal)\n");
-  printw(">> ");
-  refresh();
-
-  char name[1000];
-  getstr(name);
-  if (*name == '0') return;
-
-  if (!list.move_current(name)){
-    raw();
-    noecho();
-
+  while (true){
     clear();
-    printw("Perpindahan kategori gagal!\n");
-    printw("Kategori tidak ditemukan.\n");
-    printw("> Kembali\n");
+    print_categories(list);
+    printw("\n> Batal\n");
     refresh();
 
     int ch = getch();
     if (ch == KEY_MOUSE) {
       if (nc_getmouse(&event) == OK){
         if (event.bstate & BUTTON1_CLICKED){
-          if (event.y == 2) return;
+          if (event.y > 0 && event.y <= list.get_size()){
+            list.move_current(event.y - 1);
+            return;
+          }
+          if (event.y == list.get_size() + 2) return;
         }
       }
     }
@@ -49,62 +39,38 @@ void rename_category_screen(data_structures::CategoryList &list){
   MEVENT event;
   mmask_t old;
   mousemask (ALL_MOUSE_EVENTS | REPORT_MOUSE_POSITION, &old);
-  noraw();
-	echo();
+  raw();
+	noecho();
 
-  clear();
-  print_categories(list);
-  printw("\n"); printw("Nama kategori: (0. Batal)\n");
-  printw(">> ");
-  refresh();
-
-  char oldName[1000];
-  getstr(oldName);
-  if (*oldName == '0') return;
-
-  printw("\n"); printw("Nama baru : (0. Batal)\n");
-  printw(">> ");
-  refresh();
-
-  char newName[1000];
-  getstr(newName);
-  if (*newName == '0') return;
-
-  if (list.find_category(newName) && (oldName != newName)){
-    raw();
-    noecho();
-
+  while (true){
     clear();
-    printw("Perpindahan kategori gagal!\n");
-    printw("Nama kategori baru tidak boleh sama dengan kategori lain\n");
-    printw("> Kembali\n");
+    print_categories(list);
+    printw("\n> Batal\n");
     refresh();
 
     int ch = getch();
     if (ch == KEY_MOUSE) {
       if (nc_getmouse(&event) == OK){
         if (event.bstate & BUTTON1_CLICKED){
-          if (event.y == 2) return;
-        }
-      }
-    }
-  }
+          if (event.y > 0 && event.y <= list.get_size()){
+            size_t index = event.y - 1;
+            
+            noraw();
+            echo();
 
-  if (!list.rename_category(oldName, newName)){
-    raw();
-    noecho();
+            clear();
+            printw("\n"); printw("Nama baru : (0. Batal)\n");
+            printw(">> ");
+            refresh();
 
-    clear();
-    printw("Perpindahan kategori gagal!\n");
-    printw("Kategori tidak ditemukan.\n");
-    printw("> Kembali\n");
-    refresh();
+            char newName[1000];
+            getstr(newName);
+            if (*newName == '0') return;
 
-    int ch = getch();
-    if (ch == KEY_MOUSE) {
-      if (nc_getmouse(&event) == OK){
-        if (event.bstate & BUTTON1_CLICKED){
-          if (event.y == 2) return;
+            list.rename_category(index, newName);
+            return;
+          }
+          if (event.y == list.get_size() + 2) return;
         }
       }
     }
@@ -120,7 +86,7 @@ void add_category_screen(data_structures::CategoryList &list){
 
   clear();
   print_categories(list);
-  printw("\n"); printw("Nama kategori: (0. Batal)\n");
+  printw("\n"); printw("Nama baru: (0. Batal)\n");
   printw(">> ");
   refresh();
 
@@ -128,85 +94,54 @@ void add_category_screen(data_structures::CategoryList &list){
   getstr(name);
   if (*name == '0') return;
 
-  if (!list.insert_category(new data_structures::CategoryNode(name))){
-    raw();
-    noecho();
-
-    clear();
-    printw("Perpindahan kategori gagal!\n");
-    printw("Nama kategori baru tidak boleh sama dengan kategori lain\n");
-    printw("> Kembali\n");
-    refresh();
-
-    int ch = getch();
-    if (ch == KEY_MOUSE) {
-      if (nc_getmouse(&event) == OK){
-        if (event.bstate & BUTTON1_CLICKED){
-          if (event.y == 2) return;
-        }
-      }
-    }
-  }
-  list.move_current(name);
+  list.insert_category(new data_structures::CategoryNode(name));
 }
 
 void remove_category_screen(data_structures::CategoryList &list){
   MEVENT event;
   mmask_t old;
   mousemask (ALL_MOUSE_EVENTS | REPORT_MOUSE_POSITION, &old);
-  noraw();
-	echo();
+  raw();
+  noecho();
 
-  clear();
-  print_categories(list);
-  printw("\n"); printw("Nama kategori yang ingin dihapus: (0. Batal)\n");
-  printw(">> ");
-  refresh();
-
-  char name[1000];
-  getstr(name);
-  if (*name == '0') return;
-
-  if (list.find_category(name) && !list.find_category(name)->tasks.is_empty()){
-    raw();
-    noecho();
-
+  while (true){
     clear();
-    printw("Kategori masih memiliki task\n");
-    printw("Jika melanjutkan, semua task akan dihapus.\n");
-    printw("> Melanjutkan\n");
-    printw("> Kembali\n");
+    print_categories(list);
+    printw("\n> Batal\n");
     refresh();
 
     int ch = getch();
     if (ch == KEY_MOUSE) {
       if (nc_getmouse(&event) == OK){
         if (event.bstate & BUTTON1_CLICKED){
-          if (event.y == 2){
-            list.remove_category(name);
+          if (event.y > 0 && event.y <= list.get_size()){
+            size_t index = event.y - 1;
+            
+            if (!list.at(index)->tasks.is_empty()){
+              clear();
+              printw("Kategori masih memiliki task\n");
+              printw("Jika melanjutkan, semua task akan dihapus.\n");
+              printw("> Melanjutkan\n");
+              printw("> Kembali\n");
+              refresh();
+
+              ch = getch();
+              if (ch == KEY_MOUSE) {
+                if (nc_getmouse(&event) == OK){
+                  if (event.bstate & BUTTON1_CLICKED){
+                    if (event.y == 2){
+                      list.remove_category(index);
+                      return;
+                    }
+                    if (event.y == 3) return;
+                  }
+                }
+              }
+            }
+            list.remove_category(index);
             return;
           }
-          if (event.y == 3) return;
-        }
-      }
-    }
-  }
-
-  if (!list.remove_category(name)){
-    raw();
-    noecho();
-
-    clear();
-    printw("Perpindahan kategori gagal!\n");
-    printw("Kategori tidak ditemukan.\n");
-    printw("> Kembali\n");
-    refresh();
-
-    int ch = getch();
-    if (ch == KEY_MOUSE) {
-      if (nc_getmouse(&event) == OK){
-        if (event.bstate & BUTTON1_CLICKED){
-          if (event.y == 2) return;
+          if (event.y == list.get_size() + 2) return;
         }
       }
     }
@@ -220,15 +155,19 @@ void view_category_screen(const data_structures::CategoryList list){
   raw();
   noecho();
 
-  clear();
-  print_categories(list);
-  printw("> Kembali\n");
-  refresh();
+  while (true){
+    clear();
+    print_categories(list);
+    printw("\n> Kembali\n");
+    refresh();
 
-  int ch = getch();
-  if (ch == KEY_MOUSE) {
-    if (nc_getmouse(&event) == OK){
-      if (event.bstate & BUTTON1_CLICKED) return;
+    int ch = getch();
+    if (ch == KEY_MOUSE) {
+      if (nc_getmouse(&event) == OK){
+        if (event.bstate & BUTTON1_CLICKED){
+          if (event.y == list.get_size() + 2) return;
+        }
+      }
     }
   }
 }
@@ -243,7 +182,7 @@ void category_options_screen(data_structures::CategoryList &list){
   data_structures::CategoryNodePointer current = list.get_current();
   while (true){
     clear();
-    printw("Kategori : "); printw(current->name.c_str()); printw("\n\n");
+    printw("Kategori: "); printw(current->name.c_str()); printw("\n\n");
     printw("> Pindah Kategori\n");
     printw("> Ubah Nama Kategori\n");
     printw("> Tambahkan Kategori\n");
@@ -264,15 +203,15 @@ void category_options_screen(data_structures::CategoryList &list){
 
             case 3:
               rename_category_screen(list);
-              return;
+              break;
 
             case 4:
               add_category_screen(list);
-              return;
+              break;
 
             case 5:
               remove_category_screen(list);
-              return;
+              break;
 
             case 6:
               view_category_screen(list); 
