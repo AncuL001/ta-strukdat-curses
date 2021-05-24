@@ -68,7 +68,7 @@ namespace data_structures {
 
     void make_empty(){
       while (!is_empty()){
-        remove_category(head->name);
+        remove_category(0);
       }
       size = 0;
     }
@@ -76,43 +76,51 @@ namespace data_structures {
      * @brief memasukan node ke paling belakang list.
      * 
      * @param newNode node yang ingin dimasukkan.
-     * @return 0 jika pengisian gagal (nama sudah ada), 1 jika berhasil
      */
-    bool insert_category(const CategoryNodePointer newNode){
+    void insert_category(const CategoryNodePointer newNode){
       if (is_empty()){
         head = newNode;
         tail = newNode;
         current = newNode;
         size++;
-        return 1;
+        return;
       }
-      if (find_category(newNode->name)) return 0;
+      if (does_exist(newNode->name)){
+        delete newNode;
+        return;
+      }
       tail->next = newNode;
       newNode->prev = tail;
       tail = newNode;
       size++;
-      return 1;
+    }
+
+    bool does_exist(const std::string name) const {
+       for (auto temp = head; temp; temp = temp->next){
+        if (name == temp->name) return true;
+      }
+      return false;
     }
 
     /**
      * @brief mencari node dengan nama yang dimaksud.
      * 
-     * @param name nama node yang ingin dicari.
+     * @param index indeks node yang ingin dicari.
      * @return sebuah node jika ada, nullptr jika tidak ada
      */
-    CategoryNodePointer find_category(const std::string name) const {
+    CategoryNodePointer at(const size_t index) const {
+      if (index > size) return nullptr;
+
       CategoryNodePointer temp = head;
-      while ((temp) && (temp->name != name)){
+      for (size_t i = 0; i != index; i++){
         temp = temp->next;
       }
       return temp;
     }
 
-    CategoryNodePointer at(const size_t size) const {
-      if (size > this->size) return nullptr;
-
+    CategoryNodePointer find_by_name(const std::string name) const {
       CategoryNodePointer temp = head;
-      for (size_t i = 0; i != size; i++){
+      while ((temp) && (temp->name != name)){
         temp = temp->next;
       }
       return temp;
@@ -121,46 +129,11 @@ namespace data_structures {
     /**
      * @brief menghapus node dengan nama yang dimaksud.
      * 
-     * @todo mengubah fungsi supaya memasukkan node ke undo stack.
-     * 
-     * @param name nama node yang ingin dihapus.
-     * @return 0 jika penghapusan gagal (node tidak ditemukan), 1 jika berhasil
+     * @param index indeks node yang ingin dihapus.
      */
-    bool remove_category(std::string name) {
-      CategoryNodePointer temp = find_category(name);
-      if (temp == nullptr) return 0;
-      temp->tasks.make_empty();
-
-      if (temp == head){
-        if (temp == tail){
-          head = nullptr;
-          tail = nullptr;
-        }
-        else {
-          temp->next->prev = nullptr;
-          head = temp->next;
-        }
-      }
-
-      else {
-        if (temp == tail){
-          temp->prev->next = nullptr;
-          tail = temp->prev;
-        }
-        else {
-          temp->next->prev = temp->prev;
-          temp->prev->next = temp->next;
-        }
-      }
-
-      delete temp;
-      size--;
-      return 1;
-    }
-
-    bool remove_category(size_t index) {
+    void remove_category(size_t index) {
       CategoryNodePointer temp = at(index);
-      if (temp == nullptr) return 0;
+      if (temp == nullptr) return;
       temp->tasks.make_empty();
 
       if (temp == head){
@@ -187,34 +160,25 @@ namespace data_structures {
 
       delete temp;
       size--;
-      return 1;
     }
 
     /**
      * @brief mengubah nama node.
      * 
-     * @param oldName nama node yang ingin diganti namanya.
+     * @param index indeks node yang ingin diganti namanya.
      * @param newName nama baru node.
-     * @return 0 jika penggantian nama gagal (node tidak ditemukan), 1 jika berhasil
      */
-    bool rename_category(const std::string oldName, const std::string newName){
-      CategoryNodePointer temp = find_category(oldName);
-      if (temp == nullptr) return 0;
-
-      temp->name = newName;
-      return 1;
-    }
-
-    bool rename_category(const size_t index, const std::string newName){
+    void rename_category(const size_t index, const std::string newName){
       CategoryNodePointer temp = at(index);
-      if (temp == nullptr) return 0;
+      if (temp == nullptr) return;
 
       temp->name = newName;
-      return 1;
+      return;
     }
 
     /**
      * @brief mengembalikan current.
+     * 
      * @return current
      */
     CategoryNodePointer get_current() const {
@@ -224,23 +188,13 @@ namespace data_structures {
     /**
      * @brief mengganti current.
      * 
-     * @param name nama node yang ingin dijadikan current
-     * @return 0 jika penggantian current gagal (node tidak ditemukan), 1 jika berhasil
+     * @param index indeks node yang ingin dijadikan current
      */
-    bool move_current(const std::string name){
-      CategoryNodePointer temp = find_category(name);
-      if (temp == nullptr) return 0;
-
-      current = temp;
-      return 1;
-    }
-
-    bool move_current(const size_t index){
+    void move_current(const size_t index){
       CategoryNodePointer temp = at(index);
-      if (temp == nullptr) return 0;
+      if (temp == nullptr) return;
 
       current = temp;
-      return 1;
     }
 
     /**
