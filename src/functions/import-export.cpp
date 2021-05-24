@@ -30,7 +30,7 @@ bool import_data(data_structures::CategoryList &list, std::string name){
 
     list.insert_category(new data_structures::CategoryNode(category));
     if (task != ""){
-      list.move_current(list.get_size() - 1);
+      if (list.get_current()->name != category) list.move_current(list.get_size() - 1);
       list.get_current()->tasks.enqueue(new data_structures::TaskNode(task, parse_date(deadline)));
     }
   }
