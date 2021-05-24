@@ -67,6 +67,24 @@ void rename_category_screen(data_structures::CategoryList &list){
             getstr(newName);
             if (*newName == '0') return;
 
+            if (list.at(index)->name != newName && list.does_exist(newName)){
+              while (true){
+                clear();
+                printw("Penggantian nama kategori gagal!\n");
+                printw("Nama kategori baru tidak boleh sama dengan kategori lain\n");
+                printw("> Kembali\n");
+                refresh();
+
+                int ch = getch();
+                if (ch == KEY_MOUSE){
+                  if (nc_getmouse(&event) == OK){
+                    if (event.bstate & BUTTON1_CLICKED){
+                      if (event.y == 2) return;
+                    }
+                  }
+                }
+              }
+            }
             list.rename_category(index, newName);
             return;
           }
@@ -85,7 +103,6 @@ void add_category_screen(data_structures::CategoryList &list){
 	echo();
 
   clear();
-  print_categories(list);
   printw("\n"); printw("Nama baru: (0. Batal)\n");
   printw(">> ");
   refresh();
@@ -94,6 +111,27 @@ void add_category_screen(data_structures::CategoryList &list){
   getstr(name);
   if (*name == '0') return;
 
+  if (list.does_exist(name)){
+    raw();
+    noecho();
+
+    while (true){
+      clear();
+      printw("Penambahan kategori gagal!\n");
+      printw("Nama kategori baru tidak boleh sama dengan kategori lain\n");
+      printw("> Kembali\n");
+      refresh();
+
+      int ch = getch();
+      if (ch == KEY_MOUSE){
+        if (nc_getmouse(&event) == OK){
+          if (event.bstate & BUTTON1_CLICKED){
+            if (event.y == 2) return;
+          }
+        }
+      }
+    }
+  }
   list.insert_category(new data_structures::CategoryNode(name));
 }
 
@@ -118,22 +156,24 @@ void remove_category_screen(data_structures::CategoryList &list){
             size_t index = event.y - 1;
             
             if (!list.at(index)->tasks.is_empty()){
-              clear();
-              printw("Kategori masih memiliki task\n");
-              printw("Jika melanjutkan, semua task akan dihapus.\n");
-              printw("> Melanjutkan\n");
-              printw("> Kembali\n");
-              refresh();
+              while(true){
+                clear();
+                printw("Kategori masih memiliki task\n");
+                printw("Jika melanjutkan, semua task akan dihapus.\n");
+                printw("> Melanjutkan\n");
+                printw("> Kembali\n");
+                refresh();
 
-              ch = getch();
-              if (ch == KEY_MOUSE) {
-                if (nc_getmouse(&event) == OK){
-                  if (event.bstate & BUTTON1_CLICKED){
-                    if (event.y == 2){
-                      list.remove_category(index);
-                      return;
+                ch = getch();
+                if (ch == KEY_MOUSE) {
+                  if (nc_getmouse(&event) == OK){
+                    if (event.bstate & BUTTON1_CLICKED){
+                      if (event.y == 2){
+                        list.remove_category(index);
+                        return;
+                      }
+                      if (event.y == 3) return;
                     }
-                    if (event.y == 3) return;
                   }
                 }
               }
@@ -157,7 +197,10 @@ void view_category_screen(const data_structures::CategoryList list){
 
   while (true){
     clear();
-    print_categories(list);
+    printw("Daftar Kategori:\n");
+    list.for_each([](data_structures::CategoryNodePointer category){
+      printw(" "); printw(category->name.c_str()); printw("\n");
+    });
     printw("\n> Kembali\n");
     refresh();
 
@@ -187,7 +230,7 @@ void category_options_screen(data_structures::CategoryList &list){
     printw("> Ubah Nama Kategori\n");
     printw("> Tambahkan Kategori\n");
     printw("> Hapus Kategori\n");
-    printw("> Lihat Semua Kategori\n\n\n");
+    printw("> Lihat Semua Kategori\n\n");
     printw("> Kembali\n");
 
     refresh();
