@@ -30,7 +30,7 @@ void import_data_screen(data_structures::CategoryList &list){
     int ch = getch();
 
     if (ch == KEY_MOUSE) {
-      if (nc_getmouse(&event) == OK){
+      if (getmouse(&event) == OK){
         if (event.bstate & BUTTON1_CLICKED){
           if (event.y == 1) return;
         }
@@ -74,7 +74,7 @@ void additional_options_screen(data_structures::CategoryList &list){
 
     int ch = getch();
     if (ch == KEY_MOUSE) {
-      if (nc_getmouse(&event) == OK){
+      if (getmouse(&event) == OK){
         if (event.bstate & BUTTON1_CLICKED){
           switch (event.y) {
             case 0:

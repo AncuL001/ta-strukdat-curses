@@ -1,6 +1,7 @@
 #pragma once
 #include "../data-structures/linked-list.hpp"
 #include "../data-structures/queue.hpp"
+#define NCURSES_MOUSE_VERSION
 #include <curses.h>
 
 void first_task_screen(data_structures::CategoryNodePointer &current);

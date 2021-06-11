@@ -22,7 +22,7 @@ void move_category_screen(data_structures::CategoryList &list){
 
     int ch = getch();
     if (ch == KEY_MOUSE) {
-      if (nc_getmouse(&event) == OK){
+      if (getmouse(&event) == OK){
         if (event.bstate & BUTTON1_CLICKED){
           if (event.y > 0 && event.y <= list.get_size()){
             list.move_current(event.y - 1);
@@ -50,7 +50,7 @@ void rename_category_screen(data_structures::CategoryList &list){
 
     int ch = getch();
     if (ch == KEY_MOUSE) {
-      if (nc_getmouse(&event) == OK){
+      if (getmouse(&event) == OK){
         if (event.bstate & BUTTON1_CLICKED){
           if (event.y > 0 && event.y <= list.get_size()){
             size_t index = event.y - 1;
@@ -77,7 +77,7 @@ void rename_category_screen(data_structures::CategoryList &list){
 
                 int ch = getch();
                 if (ch == KEY_MOUSE){
-                  if (nc_getmouse(&event) == OK){
+                  if (getmouse(&event) == OK){
                     if (event.bstate & BUTTON1_CLICKED){
                       if (event.y == 2) return;
                     }
@@ -124,7 +124,7 @@ void add_category_screen(data_structures::CategoryList &list){
 
       int ch = getch();
       if (ch == KEY_MOUSE){
-        if (nc_getmouse(&event) == OK){
+        if (getmouse(&event) == OK){
           if (event.bstate & BUTTON1_CLICKED){
             if (event.y == 2) return;
           }
@@ -150,7 +150,7 @@ void remove_category_screen(data_structures::CategoryList &list){
 
     int ch = getch();
     if (ch == KEY_MOUSE) {
-      if (nc_getmouse(&event) == OK){
+      if (getmouse(&event) == OK){
         if (event.bstate & BUTTON1_CLICKED){
           if (event.y > 0 && event.y <= list.get_size()){
             size_t index = event.y - 1;
@@ -166,7 +166,7 @@ void remove_category_screen(data_structures::CategoryList &list){
 
                 ch = getch();
                 if (ch == KEY_MOUSE) {
-                  if (nc_getmouse(&event) == OK){
+                  if (getmouse(&event) == OK){
                     if (event.bstate & BUTTON1_CLICKED){
                       if (event.y == 2){
                         list.remove_category(index);
@@ -206,7 +206,7 @@ void view_category_screen(const data_structures::CategoryList list){
 
     int ch = getch();
     if (ch == KEY_MOUSE) {
-      if (nc_getmouse(&event) == OK){
+      if (getmouse(&event) == OK){
         if (event.bstate & BUTTON1_CLICKED){
           if (event.y == list.get_size() + 2) return;
         }
@@ -237,7 +237,7 @@ void category_options_screen(data_structures::CategoryList &list){
     
     int ch = getch();
     if (ch == KEY_MOUSE) {
-      if (nc_getmouse(&event) == OK){
+      if (getmouse(&event) == OK){
         if (event.bstate & BUTTON1_CLICKED){
           switch (event.y){
             case 2:

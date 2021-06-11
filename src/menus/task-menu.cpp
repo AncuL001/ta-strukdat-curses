@@ -20,7 +20,7 @@ void first_task_screen(data_structures::CategoryNodePointer &current){
 
       int ch = getch();
       if (ch == KEY_MOUSE) {
-        if (nc_getmouse(&event) == OK){
+        if (getmouse(&event) == OK){
           if (event.bstate & BUTTON1_CLICKED){
             if (event.y == 4) return;
           }
@@ -41,7 +41,7 @@ void first_task_screen(data_structures::CategoryNodePointer &current){
     int ch = getch();
       
     if (ch == KEY_MOUSE){
-      if (nc_getmouse(&event) == OK){
+      if (getmouse(&event) == OK){
         if (event.bstate & BUTTON1_CLICKED){
           switch (event.y) {
             case 7:
@@ -81,7 +81,7 @@ void all_task_screen(const data_structures::CategoryNodePointer current){
 
       int ch = getch();
       if (ch == KEY_MOUSE) {
-        if (nc_getmouse(&event) == OK){
+        if (getmouse(&event) == OK){
           if (event.bstate & BUTTON1_CLICKED){
             if (event.y == 4) return;
           }
@@ -103,7 +103,7 @@ void all_task_screen(const data_structures::CategoryNodePointer current){
     int ch = getch();
       
     if (ch == KEY_MOUSE){
-      if (nc_getmouse(&event) == OK){
+      if (getmouse(&event) == OK){
         if (event.bstate & BUTTON1_CLICKED) return;
       }
     }
