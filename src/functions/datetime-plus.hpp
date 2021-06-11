@@ -2,7 +2,6 @@
 #include <iostream>
 #include <sstream>
 #include <ctime>
-#include <windows.h>
 
 /**
  * @brief membandingkan dua tanggal
