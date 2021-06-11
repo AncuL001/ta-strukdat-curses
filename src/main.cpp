@@ -24,7 +24,7 @@ bool empty_list_screen(data_structures::CategoryList &list){
 
     int ch = getch();
     if (ch == KEY_MOUSE) {
-      if (nc_getmouse(&event) == OK){
+      if (getmouse(&event) == OK){
         if (event.bstate & BUTTON1_CLICKED){
           switch (event.y) {
             case 1:
@@ -76,7 +76,7 @@ void main_menu(data_structures::CategoryList &list){
       int ch = getch();
 
       if (ch == KEY_MOUSE) {
-        if (nc_getmouse(&event) == OK){
+        if (getmouse(&event) == OK){
           if (event.bstate & BUTTON1_CLICKED){
             switch (event.y) {
               case 2:
