@@ -1,5 +1,6 @@
 #pragma once
-#include <csv2.hpp>
+#include <csv2/reader.hpp>
+#include <csv2/writer.hpp>
 #include <string>
 #include <vector>
 #include "../data-structures/linked-list.hpp"
